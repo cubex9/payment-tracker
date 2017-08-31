@@ -6,7 +6,7 @@ import java.io.*;
 
 /**
  * console app
- * */
+ */
 public class PaymentTrackerApp {
 
     public static void main(String[] args) {
@@ -14,18 +14,15 @@ public class PaymentTrackerApp {
 
         PaymentTracker pt = new PaymentTracker(System.out);
 
-        /* print input data into output */
-        if( arguments.hasOption("e")) {
+        /* enable echo */
+        if (arguments.hasOption("e")) {
             pt.enableEcho();
         }
 
         /* if input file is set, read */
         if (arguments.hasOption("f")) {
             try {
-                pt.reader(
-                        new FileInputStream(
-                                new File((String) arguments.getParsedOptionValue("f")))
-                );
+                pt.reader(fileInputStream((String) arguments.getParsedOptionValue("f")));
             } catch (ParseException pe) {
                 System.err.println("Incorrect input file argument: " + pe.getMessage());
             } catch (IOException ioe) {
@@ -62,5 +59,16 @@ public class PaymentTrackerApp {
 
             throw new IllegalArgumentException();
         }
+    }
+
+    /**
+     * get InputStream from file
+     *
+     * @param fileName
+     * @return
+     * @throws IOException
+     */
+    public static InputStream fileInputStream(String fileName) throws IOException {
+        return new FileInputStream(new File(fileName));
     }
 }
