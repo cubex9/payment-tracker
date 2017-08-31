@@ -1,34 +1,30 @@
 package eu.cxn.paymenttracker;
 
-import java.io.PrintStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
+/**
+ * keep data map synchronized
+ */
 public class PaymentRepository {
 
-    private Map<String,Long> data;
+    private Map<String, PaymentRecord> data;
 
     public PaymentRepository() {
         data = new LinkedHashMap<>();
     }
 
-    public synchronized void record( PaymentRecord r ) {
+    public synchronized void put(PaymentRecord r) {
 
-        if( data.containsKey(r.getCurrency())) {
-            data.put( r.getCurrency(), data.get(r.getCurrency()) + r.getAmount());
+        if (data.containsKey(r.getCurrency())) {
+            data.get(r.getCurrency()).add(r.getAmount());
         } else {
-            data.put( r.getCurrency(), r.getAmount());
+            data.put(r.getCurrency(), r);
         }
     }
 
-    public synchronized void print(PrintStream destination ) {
-
-        destination.print("actual: ");
-
-        data.forEach( (k,v) -> {
-            if( v != 0 ) {
-                destination.println(k + " " + v);
-            }
-        });
+    public synchronized void forEach(Consumer<PaymentRecord> c) {
+        data.values().forEach(c);
     }
 }
