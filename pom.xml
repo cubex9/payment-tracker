@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>eu.cxn.bsc</groupId>
+    <artifactId>payment-tracker</artifactId>
+    <version>0.1-SNAPSHOT</version>
+
+    <developers>
+        <developer>
+            <name>Aleš Kubásek</name>
+            <email>cube.x.nine@gmail.com</email>
+        </developer>
+    </developers>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.javadoc.skip>false</maven.javadoc.skip>
+
+        <!-- testy -->
+        <junit.version>4.12</junit.version>
+
+
+        <!-- verze pluginu -->
+        <maven.compiler.version>2.3.2</maven.compiler.version>
+        <maven.war.version>2.3</maven.war.version>
+        <maven.surefire.version>2.18</maven.surefire.version>
+        <maven.failsafe.version>2.18</maven.failsafe.version>
+        <jacoco.maven.version>0.7.4.201502262128</jacoco.maven.version>
+        <!-- https://ecosystem.atlassian.net/browse/MJF-207 -->
+
+        <!-- datum sestavení aplikace + formát pro datum+čas -->
+        <app.build.timestamp>${maven.build.timestamp}</app.build.timestamp>
+        <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSSXXX</maven.build.timestamp.format>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-cli</groupId>
+            <artifactId>commons-cli</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+    </dependencies>
+    
+
+</project>
