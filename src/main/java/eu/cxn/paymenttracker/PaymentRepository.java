@@ -5,16 +5,23 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 /**
- * keep data map synchronized
+ * keep put and forEach action threadsafe
  */
 public class PaymentRepository {
 
     private Map<String, PaymentRecord> data;
 
+    /**
+     *
+     */
     public PaymentRepository() {
         data = new LinkedHashMap<>();
     }
 
+    /**
+     *
+     * @param r
+     */
     public synchronized void put(PaymentRecord r) {
 
         if (data.containsKey(r.getCurrency())) {
@@ -24,6 +31,10 @@ public class PaymentRepository {
         }
     }
 
+    /**
+     *
+     * @param c
+     */
     public synchronized void forEach(Consumer<PaymentRecord> c) {
         data.values().forEach(c);
     }

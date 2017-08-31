@@ -5,33 +5,55 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Scanner;
 
+/**
+ *
+ */
 public class PaymentTracker {
 
+    /* synchronized data repository */
     private PaymentRepository paymentRepository;
 
-    private PrintStream printStream;
+    /* output print stream */
+    private PrintStream output;
 
+    /* echo, print input data to output,
+       is disabled by default
+    */
     private boolean echo = false;
 
-    public PaymentTracker(PrintStream ps) {
-        setPrintStream(ps);
+    /**
+     *
+     * @param out
+     */
+    public PaymentTracker(PrintStream out) {
+        setOutput(out);
 
         paymentRepository = new PaymentRepository();
     }
 
-    public void setPrintStream(PrintStream ps) {
-        if( ps == null ) {
+    /**
+     *
+     * @param out
+     */
+    public void setOutput(PrintStream out) {
+        if( out == null ) {
             throw new IllegalArgumentException("PrintStream NULL");
         }
 
-        this.printStream = ps;
+        this.output = out;
     }
 
+    /**
+     *
+     */
     public void enableEcho() {
         echo = true;
     }
 
-
+    /**
+     *
+     * @param in
+     */
     public void reader(InputStream in) {
 
         /* read to EOF or 'quit' */
@@ -45,7 +67,7 @@ public class PaymentTracker {
             }
 
             if (echo) {
-                printStream.println(line);
+                output.println(line);
             }
 
             /* try parse line */
@@ -54,13 +76,16 @@ public class PaymentTracker {
 
                 /* if ok, apply to repository */
                 paymentRepository.put(r);
-                System.out.println("OK");
             } else {
-                System.out.println("Invalid input");
+                System.err.println("Invalid input");
             }
         }
     }
 
+    /**
+     *
+     * @param timeout
+     */
     public void printer(long timeout) {
 
         new Thread() {
@@ -72,17 +97,17 @@ public class PaymentTracker {
 
                     while (true) {
 
-                        printStream.println("current amounts: ");
+                        output.println("current amounts: ");
                         paymentRepository.forEach(v -> {
                             if( v.getAmount() != 0 ) {
-                                v.print(printStream);
+                                v.print(output);
                             }
                         });
 
-                        sleep(timeout);
+                        Thread.sleep(timeout);
                     }
 
-                } catch (Exception e) {
+                } catch (InterruptedException ie) {
 
                 } finally {
 
