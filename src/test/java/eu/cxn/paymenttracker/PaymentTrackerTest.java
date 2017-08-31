@@ -13,19 +13,17 @@ import static org.junit.Assert.assertEquals;
 
 public class PaymentTrackerTest {
 
-    ByteArrayOutputStream baos;
+    private ByteArrayOutputStream baos;
 
-    PrintStream output;
+    private PrintStream output;
 
-    PaymentTracker tracker;
+    private PaymentTracker tracker;
 
     @Before
     public void setUp() {
         baos = new ByteArrayOutputStream();
         output = new PrintStream(baos);
-
         tracker = new PaymentTracker(output);
-
     }
 
     @Test
