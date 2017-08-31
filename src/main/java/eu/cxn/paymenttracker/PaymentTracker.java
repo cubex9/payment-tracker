@@ -3,6 +3,7 @@ package eu.cxn.paymenttracker;
 
 import org.apache.commons.cli.*;
 
+import java.io.InputStream;
 import java.util.Scanner;
 
 public class PaymentTracker {
@@ -16,7 +17,7 @@ public class PaymentTracker {
         PaymentTracker pt = new PaymentTracker(args);
         pt.printer(60000L);
 
-        pt.read();
+        pt.read(System.in);
     }
 
     public PaymentTracker( String[] args ) {
@@ -25,13 +26,13 @@ public class PaymentTracker {
         paymentRepository = new PaymentRepository();
     }
 
-    public void read() {
+    public void read(InputStream in) {
 
         /* read */
-        Scanner s = new Scanner(System.in);
+        Scanner s = new Scanner(in);
 
         while (s.hasNextLine()) {
-            String line = s.next();
+            String line = s.nextLine();
 
             if( arguments.hasOption("e")) {
                 System.out.println(line);
@@ -39,6 +40,14 @@ public class PaymentTracker {
 
             if( line.contains("quit")) {
                 break;
+            }
+
+            PaymentRecord r = PaymentRecord.parse(line);
+            if( r != null ) {
+                paymentRepository.record(r);
+                System.out.println("OK");
+            } else {
+                System.out.println( "ERROR");
             }
         }
     }

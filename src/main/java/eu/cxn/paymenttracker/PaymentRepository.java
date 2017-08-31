@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class PaymentRepository {
 
-    private Map<String,PaymentRecord> data;
+    private Map<String,Long> data;
 
     public PaymentRepository() {
         data = new LinkedHashMap<>();
@@ -15,9 +15,9 @@ public class PaymentRepository {
     public synchronized void record( PaymentRecord r ) {
 
         if( data.containsKey(r.getCurrency())) {
-            data.put( r.getCurrency(), data.get(r.getCurrency()) + amount);
+            data.put( r.getCurrency(), data.get(r.getCurrency()) + r.getAmount());
         } else {
-            data.put( r.getCurrency(), amount);
+            data.put( r.getCurrency(), r.getAmount());
         }
     }
 
