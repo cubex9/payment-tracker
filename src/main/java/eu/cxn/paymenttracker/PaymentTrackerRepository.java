@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * keep put and forEach action threadsafe
  */
-public class PaymentTrackerRepository {
+class PaymentTrackerRepository {
 
     @FunctionalInterface
     public interface CompleteInfo {
@@ -22,7 +22,7 @@ public class PaymentTrackerRepository {
     /**
      *
      */
-    public PaymentTrackerRepository() {
+    PaymentTrackerRepository() {
 
         /* data keep positions */
         data = new LinkedHashMap<>();
@@ -34,7 +34,7 @@ public class PaymentTrackerRepository {
      *
      * @param r
      */
-    public synchronized void put(PaymentRecord r) {
+    synchronized void put(PaymentRecord r) {
 
         if (data.containsKey(r.getCode())) {
             data.get(r.getCode()).inc(r);
@@ -43,7 +43,7 @@ public class PaymentTrackerRepository {
         }
     }
 
-    public synchronized void put(ExchangeRecord e) {
+    synchronized void put(ExchangeRecord e) {
         exchanges.put(e.getCode(),e);
     }
 
@@ -52,7 +52,7 @@ public class PaymentTrackerRepository {
      *
      * @param c
      */
-    public synchronized void forEach(CompleteInfo c) {
+    synchronized void forEach(CompleteInfo c) {
         data.values().forEach( r -> c.get(r.getCode(), r, exchanges.get(r.getCode())));
     }
 }

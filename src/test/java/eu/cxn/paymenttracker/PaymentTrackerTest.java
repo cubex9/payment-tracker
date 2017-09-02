@@ -22,7 +22,7 @@ public class PaymentTrackerTest {
     public void setUp() {
         baos = new ByteArrayOutputStream();
         output = new PrintStream(baos);
-        tracker = new PaymentTracker(output);
+        tracker = new PaymentTracker(output, PaymentTrackerApp.EXCHANGE_BASE_CODE);
     }
 
     @Test
@@ -43,20 +43,22 @@ public class PaymentTrackerTest {
                 "HKD 200\n", baos.toString().replaceAll("\r",""));
     }
 
-    @Test
-    public void exchangeReader() throws Exception {
+    @Test(expected = IllegalStateException.class)
+    public void exchangeReaderIlegal() throws Exception {
 
+        tracker = new PaymentTracker(output, null);
+        tracker.exchangesReader(PaymentTrackerApp.resourceInputStream("/examples/usd.exchanges"));
     }
 
     @Test
     public void printer() throws Exception {
 
         tracker.reader(PaymentTrackerApp.resourceInputStream("/examples/bsc.txt"));
-        tracker.printer(60000L);
+        tracker.printer( PaymentTrackerApp.PRINTER_MESSAGE, 1000L);
 
         Thread.sleep(2000L);
 
-        assertEquals("current amounts: \n" +
+        assertEquals(PaymentTrackerApp.PRINTER_MESSAGE + "\n" +
                 "USD 900\n" +
                 "HKD 300\n" +
                 "RMB 2000\n", baos.toString().replaceAll("\r",""));
@@ -68,19 +70,19 @@ public class PaymentTrackerTest {
     @Test(expected = IllegalStateException.class)
     public void secondPrinter() {
 
-        tracker.printer(10000);
-        tracker.printer(10000);
+        tracker.printer(PaymentTrackerApp.PRINTER_MESSAGE, 10000);
+        tracker.printer(PaymentTrackerApp.PRINTER_MESSAGE, 10000);
     }
 
     @Test
-    public void quit() {
+    public void quit() throws Exception {
 
         tracker.reader(new ByteArrayInputStream("quit\nUSD 900\n".getBytes(StandardCharsets.UTF_8)));
-        assertEquals("current amounts: \n", baos.toString().replaceAll("\r",""));
+        assertEquals("final stats: \n", baos.toString().replaceAll("\r",""));
     }
 
     @Test
-    public void readerInvalidInput() {
+    public void readerInvalidInput() throws Exception {
 
         System.setErr(new PrintStream(baos));
 
@@ -89,11 +91,11 @@ public class PaymentTrackerTest {
     }
 
     @Test
-    public void exchangeInvalidInput() {
+    public void exchangeInvalidInput() throws Exception {
 
         System.setErr(new PrintStream(baos));
 
-        tracker.exchangesReader("USD", new ByteArrayInputStream("USD 90a\n".getBytes(StandardCharsets.UTF_8)));
+        tracker.exchangesReader(new ByteArrayInputStream("USD 90a\n".getBytes(StandardCharsets.UTF_8)));
         assertEquals("Exchange: Invalid input ( USD 90a )\n", baos.toString().replaceAll("\r",""));
 
     }

@@ -37,7 +37,8 @@ public class PaymentTrackerAppTest {
                         "USD -100\n" +
                         "RMB 2000\n" +
                         "HKD 200\n" +
-                        "current amounts: \n" +
+                        "payment stats after read: src/test/resources/examples/bsc.txt" +
+                        "\n" +
                         "USD 900\n" +
                         "HKD 300 (USD 38.35)\n" +
                         "RMB 2000 (USD 304.83)\n",
@@ -62,7 +63,7 @@ public class PaymentTrackerAppTest {
     @Test
     public void mainExp() {
 
-        PaymentTrackerApp.main( new String[] {"-f"});
+        PaymentTrackerApp.main(new String[]{"-f"});
         assertEquals("Missing argument for option: f\n" +
                         "usage: payment-tracker\n" +
                         " -?         this message\n" +
@@ -79,7 +80,21 @@ public class PaymentTrackerAppTest {
         System.setIn(new ByteArrayInputStream("USD 900".getBytes(StandardCharsets.UTF_8)));
         PaymentTrackerApp.main(new String[]{"-e"});
 
-        assertEquals("current amounts: \n" +
-                "USD 900\n", baos.toString().replaceAll("\r", ""));
+        assertEquals("USD 900\n", baos.toString().replaceAll("\r", ""));
+    }
+
+    @Test
+    public void mainFileEx() {
+        PaymentTrackerApp.main(new String[]{"-f", "test"});
+        assertEquals("Can't read file: test (The system cannot find the file specified)\n", baos.toString().replaceAll("\r", ""));
+    }
+
+    @Test
+    public void mainExchangesEx() {
+
+        PaymentTrackerApp.main(new String[]{"-x", "test"});
+        assertEquals("Can't read exchange rates file: test (The system cannot find the file specified)\n", baos.toString().replaceAll("\r", ""));
+
+
     }
 }

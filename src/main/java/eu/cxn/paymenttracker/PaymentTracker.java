@@ -7,6 +7,7 @@ import java.io.PrintStream;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.function.Function;
 
 /**
  *
@@ -34,24 +35,17 @@ public class PaymentTracker {
     private Thread printerThread;
 
     /**
-     * @param out
+     * @param output
      */
-    public PaymentTracker(PrintStream out) {
-        setOutput(out);
+    public PaymentTracker(PrintStream output, String exchangeBase) {
+        if (output == null) {
+            throw new IllegalArgumentException("output stream is: NULL");
+        }
+        this.output = output;
+        this.exchangeBase = exchangeBase;
 
         paymentRepository = new PaymentTrackerRepository();
         exchanges = new Hashtable<>();
-    }
-
-    /**
-     * @param out
-     */
-    public void setOutput(PrintStream out) {
-        if (out == null) {
-            throw new IllegalArgumentException("PrintStream NULL");
-        }
-
-        this.output = out;
     }
 
     /**
@@ -62,41 +56,33 @@ public class PaymentTracker {
     }
 
     /**
-     * exchanges reader
+     * read input data from stream
+     *
+     * @param in
+     * @throws IOException
      */
-    public void exchangesReader(String base, InputStream in) {
-
-        exchangeBase = base;
-
-        /* read to EOF or 'quit' */
-        Scanner s = new Scanner(in);
-
-        while (s.hasNextLine()) {
-            String line = s.nextLine();
-
-            /* ignore empty lines */
-            if (line.isEmpty()) {
-                continue;
-            }
-
-            /* try parse line */
-            ExchangeRecord r = ExchangeRecord.parse(line);
-            if (r != null && !r.getCode().equals(base)) {
-
-                /* if ok, apply to repository */
-                paymentRepository.put(r);
-            } else {
-                System.err.println("Exchange: Invalid input ( " + line + " )");
-            }
-        }
-
+    public void reader(InputStream in) throws IOException {
+        reader(in,this::resolveInputLine);
     }
 
+    /**
+     * exchanges reader
+     */
+    public void exchangesReader(InputStream in) throws IOException {
+        if (exchangeBase == null) {
+            throw new IllegalStateException("Base exchange currnecy code is not set");
+        }
+
+        reader(in,this::resolveExchangeLine);
+    }
 
     /**
      * @param in
      */
-    public void reader(InputStream in) throws IOException {
+    private void reader(InputStream in, Function<String,Boolean> resolver) throws IOException {
+        if( in == null) {
+            throw new IllegalArgumentException("input stream is NULL");
+        }
 
         /* read to EOF or 'quit' */
         Scanner s = new Scanner(in);
@@ -104,39 +90,78 @@ public class PaymentTracker {
         while (s.hasNextLine()) {
             String line = s.nextLine();
 
-            /* ignore empty lines */
-            if (line.isEmpty()) {
+            /* ignore empty lines and call line resolver  */
+            if (line.isEmpty() || resolver.apply(line)) {
                 continue;
-            }
-
-            /* quit command */
-            if (line.contains("quit")) {
-                printCurrentAmounts();
+            } else {
                 break;
             }
+        }
 
-            /* print echo */
-            if (echo) {
-                output.println(line);
-            }
-
-            /* try parse line */
-            PaymentRecord r = PaymentRecord.parse(line);
-            if (r != null) {
-
-                /* if ok, apply to repository */
-                paymentRepository.put(r);
-            } else {
-                System.err.println("Payment: Invalid input ( " + line + " )");
-            }
+        if (s.ioException() != null) {
+            throw s.ioException();
         }
     }
 
     /**
+     * manage one input line of data source
+     *
+     * @param line
+     * @return
+     */
+    private boolean resolveInputLine(String line) {
+
+        /* quit command */
+        if (line.contains("quit")) {
+            printCurrentAmounts("final stats: ");
+            return false;
+        }
+
+        /* print echo */
+        if (echo) {
+            printEcho(line);
+        }
+
+        /* try parse line */
+        PaymentRecord r = PaymentRecord.parse(line);
+        if (r != null) {
+
+            /* if ok, apply to repository */
+            paymentRepository.put(r);
+        } else {
+            System.err.println("Payment: Invalid input ( " + line + " )");
+        }
+
+        return true;
+    }
+
+    /**
+     * manage one line of exchange source stream
+     *
+     * @param line
+     * @return
+     */
+    private boolean resolveExchangeLine(String line) {
+
+        /* try parse line */
+        ExchangeRecord r = ExchangeRecord.parse(line);
+        if (r != null && !r.getCode().equals(exchangeBase)) {
+
+            /* if ok, apply to repository */
+            paymentRepository.put(r);
+        } else {
+            System.err.println("Exchange: Invalid input ( " + line + " )");
+        }
+
+        return true;
+    }
+
+
+    /**
      * @param period
      */
-    public void printer(long period) {
-        if( printerThread != null ) {
+    public void printer(String message, long period) {
+        if (printerThread != null) {
             throw new IllegalStateException("Impossible start second printer");
         }
 
@@ -148,11 +173,10 @@ public class PaymentTracker {
                 try {
 
                     while (true) {
-                        printCurrentAmounts();
-                        output.flush();
-
-                        /* wait for next period */
+                        /* wait for print */
                         Thread.sleep(period);
+
+                        printCurrentAmounts(message);
                     }
 
                 } catch (InterruptedException ie) {
@@ -165,23 +189,37 @@ public class PaymentTracker {
     }
 
     /**
+     * don't mix printCurrentAmounts and printEcho
+     *
+     * @param line
+     */
+    private synchronized void printEcho(String line) {
+        output.println(line);
+    }
+
+    /**
      *
      */
-    public void printCurrentAmounts() {
+    public synchronized void printCurrentAmounts(String message) {
 
-        output.println("\rcurrent amounts: ");
+        if( message != null ) {
+            output.println("\r"+message);
+        }
+
+        /* ( code, paymentRecord, exchangeRecord ) */
         paymentRepository.forEach((c, r, e) -> {
 
             if (r.getAmount() != 0) {
-                output.print(c + " " + r.print());
+                String o = c + " " + r.print();
 
                 if (e != null) {
-                    output.print(" (" + exchangeBase + " " + e.print(r.getAmount()) + ")");
+                    o += " (" + exchangeBase + " " + e.print(r.getAmount()) + ")";
                 }
 
-                output.println();
+                output.println(o);
             }
         });
+
     }
 
     /**
