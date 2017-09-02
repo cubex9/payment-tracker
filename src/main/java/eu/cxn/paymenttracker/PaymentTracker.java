@@ -1,6 +1,7 @@
 package eu.cxn.paymenttracker;
 
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Hashtable;
@@ -95,7 +96,7 @@ public class PaymentTracker {
     /**
      * @param in
      */
-    public void reader(InputStream in) {
+    public void reader(InputStream in) throws IOException {
 
         /* read to EOF or 'quit' */
         Scanner s = new Scanner(in);

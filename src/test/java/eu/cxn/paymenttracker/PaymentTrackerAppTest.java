@@ -3,8 +3,10 @@ package eu.cxn.paymenttracker;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 
 import static org.junit.Assert.assertEquals;
 
@@ -69,7 +71,15 @@ public class PaymentTrackerAppTest {
                         " -q         quit after read file\n" +
                         " -x <arg>   exchange rates file\n"
                 , baos.toString().replaceAll("\r", ""));
+    }
 
+    @Test
+    public void mainIn() {
 
+        System.setIn(new ByteArrayInputStream("USD 900".getBytes(StandardCharsets.UTF_8)));
+        PaymentTrackerApp.main(new String[]{"-e"});
+
+        assertEquals("current amounts: \n" +
+                "USD 900\n", baos.toString().replaceAll("\r", ""));
     }
 }

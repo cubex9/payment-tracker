@@ -31,6 +31,7 @@ public class PaymentTrackerApp {
     public static void main(String[] args) {
         CommandLine arguments = parseArguments(args);
 
+        /* help message and quit */
         if( arguments == null || arguments.hasOption("?")) {
             (new HelpFormatter()).printHelp("payment-tracker", argumentOptions);
             return;
