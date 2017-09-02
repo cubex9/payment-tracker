@@ -9,8 +9,32 @@ import java.io.*;
  */
 public class PaymentTrackerApp {
 
+    /* print period in miliseconds */
+    private static final long PRINT_PRERIOD = 60000L;
+
+    /* exchanges base */
+    public static final String EXCHANGE_BASE_CODE = "USD";
+
+    /* command line arguments definition */
+    private static final Options argumentOptions = new Options()
+            .addOption("?", false, "this message")
+            .addOption("f", true, "input file name")
+            .addOption("q", false, "quit after read file")
+            .addOption("e", false, "print input data to output")
+            .addOption("x", true, "exchange rates file");
+
+    /**
+     * console application
+     *
+     * @param args
+     */
     public static void main(String[] args) {
         CommandLine arguments = parseArguments(args);
+
+        if( arguments == null || arguments.hasOption("?")) {
+            (new HelpFormatter()).printHelp("payment-tracker", argumentOptions);
+            return;
+        }
 
         PaymentTracker pt = new PaymentTracker(System.out);
 
@@ -19,19 +43,31 @@ public class PaymentTrackerApp {
             pt.enableEcho();
         }
 
+        /* exchage rates */
+        if (arguments.hasOption("x")) {
+            try {
+                pt.exchangesReader(EXCHANGE_BASE_CODE,fileInputStream(arguments.getOptionValue("x")));
+            } catch (IOException ioe) {
+                System.err.println("Can't read exchange rates file: " + ioe.getMessage());
+            }
+        }
+
         /* if input file is set, read */
         if (arguments.hasOption("f")) {
             try {
-                pt.reader(fileInputStream((String) arguments.getParsedOptionValue("f")));
-            } catch (ParseException pe) {
-                System.err.println("Incorrect input file argument: " + pe.getMessage());
+                pt.reader(fileInputStream(arguments.getOptionValue("f")));
             } catch (IOException ioe) {
                 System.err.println("Can't read file: " + ioe.getMessage());
             }
         }
 
-        pt.printer(60000L);
-        pt.reader(System.in);
+        if( arguments.hasOption("q")) {
+            pt.printCurrentAmounts();
+        } else {
+            pt.printer(PRINT_PRERIOD);
+            pt.reader(System.in);
+            pt.exit();
+        }
     }
 
     /**
@@ -42,22 +78,12 @@ public class PaymentTrackerApp {
      */
     public static CommandLine parseArguments(String[] args) {
 
-        final Options argumentOptions = new Options()
-                .addOption("?", false, "this message")
-                .addOption("f", true, "input file name")
-                .addOption("e", false, "print input data to output");
-
-
         try {
             return (new GnuParser()).parse(argumentOptions, args);
 
         } catch (ParseException exp) {
             System.err.println(exp.getMessage());
-
-            /* print using message */
-            (new HelpFormatter()).printHelp("payment-tracker", argumentOptions);
-
-            throw new IllegalArgumentException();
+            return null;
         }
     }
 
@@ -70,5 +96,16 @@ public class PaymentTrackerApp {
      */
     public static InputStream fileInputStream(String fileName) throws IOException {
         return new FileInputStream(new File(fileName));
+    }
+
+    /**
+     * get input stream from resource file
+     *
+     * @param resourceName
+     * @return
+     * @throws IOException
+     */
+    public static FileInputStream resourceInputStream(String resourceName) throws IOException {
+        return new FileInputStream(PaymentTrackerApp.class.getResource(resourceName).getFile());
     }
 }

@@ -15,12 +15,6 @@ public class PaymentRecordTest {
     }
 
     @Test
-    public void getCurrency() throws Exception {
-
-        assertEquals("USD", pr.getCurrency());
-    }
-
-    @Test
     public void getAmount() throws Exception {
 
         assertEquals(100L, pr.getAmount());
@@ -29,11 +23,11 @@ public class PaymentRecordTest {
     @Test
     public void add() throws Exception {
 
-        pr.add( 20L );
+        pr.inc( new PaymentRecord("USD", 20L ));
 
         assertEquals( 120L, pr.getAmount());
 
-        pr.add( -20L );
+        pr.inc( new PaymentRecord("USD", -20L ));
 
         assertEquals( 100L, pr.getAmount());
 
@@ -56,6 +50,8 @@ public class PaymentRecordTest {
         assertEquals(null, PaymentRecord.parse("usd 21"));
         assertEquals(null, PaymentRecord.parse("21"));
         assertEquals(null, PaymentRecord.parse("USD"));
-//        assertEquals(null, PaymentRecord.parse("USD21"));
+        assertEquals(null, PaymentRecord.parse("USD21"));
+
+        assertEquals(null, PaymentRecord.parse("USD 45454354363563465365465465645654"));
     }
 }

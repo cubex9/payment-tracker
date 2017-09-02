@@ -1,49 +1,36 @@
 package eu.cxn.paymenttracker;
 
-import java.io.PrintStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * curency and amount
  */
-public class PaymentRecord {
+public class PaymentRecord extends CurrencyCode {
 
     private static final Pattern PATTERN = Pattern.compile("^\\s*((?<CUR>[A-Z]{3})|(?<AMO>\\-?[0-9]+)|\\s+){3}\\s*$");
 
-    private String currency;
 
     private Long amount;
 
     /**
-     *
-     * @param currency
+     * @param code
      * @param amount
      */
-    public PaymentRecord(String currency, Long amount) {
+    public PaymentRecord(String code, Long amount) {
 
-        this.currency = currency;
+        super(code);
         this.amount = amount;
     }
 
     /**
-     *
-     * @param inc
+     * @param
      */
-    public void add(Long inc) {
-        amount += inc;
+    public void inc(PaymentRecord r) {
+        amount += r.getAmount();
     }
 
     /**
-     *
-     * @return
-     */
-    public String getCurrency() {
-        return currency;
-    }
-
-    /**
-     *
      * @return
      */
     public long getAmount() {
@@ -51,7 +38,6 @@ public class PaymentRecord {
     }
 
     /**
-     *
      * @param line
      * @return
      */
@@ -60,7 +46,11 @@ public class PaymentRecord {
 
         if (m.matches()) {
             if (m.group("CUR") != null && m.group("AMO") != null) {
-                return new PaymentRecord(m.group("CUR"), Long.parseLong(m.group("AMO")));
+                try {
+                    return new PaymentRecord(m.group("CUR"), Long.parseLong(m.group("AMO")));
+                } catch( NumberFormatException nfe ) {
+                    /* return null */
+                }
             }
         }
 
@@ -69,18 +59,16 @@ public class PaymentRecord {
 
     /**
      *
-     * @param out
      */
-    public void print(PrintStream out) {
-        out.println(toString());
+    public String print() {
+        return String.format("%d",amount);
     }
 
     /**
-     *
      * @return
      */
     @Override
     public String toString() {
-        return currency + " " + amount;
+        return getCode() + " " + getAmount();
     }
 }
