@@ -64,11 +64,11 @@ public class PaymentTrackerApp {
 
             if (!arguments.hasOption("q")) {
 
-                /* start periodial printer thread */
+                /* start periodical printer thread */
                 pt.printer(PRINTER_MESSAGE, PRINT_PERIOD);
 
                 /* read input stream */
-                pt.reader(System.in,true);
+                pt.reader(System.in);
             }
 
         } catch (Exception e ) {

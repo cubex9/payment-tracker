@@ -94,7 +94,5 @@ public class PaymentTrackerAppTest {
 
         PaymentTrackerApp.main(new String[]{"-x", "test"});
         assertEquals("test (The system cannot find the file specified)\n", baos.toString().replaceAll("\r", ""));
-
-
     }
 }
