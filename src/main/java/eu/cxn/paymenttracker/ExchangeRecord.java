@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 public class ExchangeRecord extends CurrencyCode {
 
-    private static final Pattern PATTERN = Pattern.compile("^("+ CurrencyCode.PATTERN+") (\\d+(\\.\\d+)?)$");
+    private static final Pattern P_PATTERN = Pattern.compile("^("+ CurrencyCode.C_PATTERN +") (\\d+(\\.\\d+)?)$");
 
     Double invRate;
 
@@ -34,7 +34,7 @@ public class ExchangeRecord extends CurrencyCode {
      * @return
      */
     public static ExchangeRecord parse( String line ) {
-        Matcher m = PATTERN.matcher(line);
+        Matcher m = P_PATTERN.matcher(line);
         if( m.matches()) {
             try {
                 return new ExchangeRecord(m.group(1), Double.parseDouble(m.group(2)));

@@ -6,6 +6,8 @@ public class PaymentTrackerRepositoryTest {
 
     @Test
     public void putPt() throws Exception {
+
+        
     }
 
     @Test

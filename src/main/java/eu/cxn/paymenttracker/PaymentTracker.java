@@ -4,8 +4,6 @@ package eu.cxn.paymenttracker;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.Hashtable;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.function.Function;
 
@@ -16,9 +14,6 @@ public class PaymentTracker {
 
     /* synchronized data repository */
     private PaymentTrackerRepository paymentRepository;
-
-    /* exchanges table */
-    private Map<String, ExchangeRecord> exchanges;
 
     /* exchange base */
     private String exchangeBase;
@@ -45,7 +40,6 @@ public class PaymentTracker {
         this.exchangeBase = exchangeBase;
 
         paymentRepository = new PaymentTrackerRepository();
-        exchanges = new Hashtable<>();
     }
 
     /**
@@ -61,39 +55,38 @@ public class PaymentTracker {
      * @param in
      * @throws IOException
      */
-    public void reader(InputStream in) throws IOException {
-        reader(in,this::resolveInputLine);
+    public boolean reader(InputStream in) throws IOException {
+        return reader(in,this::resolveInputLine);
     }
 
     /**
      * exchanges reader
      */
-    public void exchangesReader(InputStream in) throws IOException {
+    public boolean exchangesReader(InputStream in) throws IOException {
         if (exchangeBase == null) {
             throw new IllegalStateException("Base exchange currnecy code is not set");
         }
 
-        reader(in,this::resolveExchangeLine);
+        return reader(in,this::resolveExchangeLine);
     }
 
     /**
      * @param in
      */
-    private void reader(InputStream in, Function<String,Boolean> resolver) throws IOException {
+    private boolean reader(InputStream in, Function<String,Boolean> resolver) throws IOException {
         if( in == null) {
             throw new IllegalArgumentException("input stream is NULL");
         }
 
         /* read to EOF or 'quit' */
         Scanner s = new Scanner(in);
+        boolean result = true;
 
         while (s.hasNextLine()) {
             String line = s.nextLine();
 
             /* ignore empty lines and call line resolver  */
-            if (line.isEmpty() || resolver.apply(line)) {
-                continue;
-            } else {
+            if (!(line.isEmpty() || ( result = resolver.apply(line)))) {
                 break;
             }
         }
@@ -101,6 +94,8 @@ public class PaymentTracker {
         if (s.ioException() != null) {
             throw s.ioException();
         }
+
+        return result;
     }
 
     /**

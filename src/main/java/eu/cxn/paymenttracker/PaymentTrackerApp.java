@@ -35,7 +35,7 @@ public class PaymentTrackerApp {
         CommandLine arguments = parseArguments(args);
 
         /* help message and quit */
-        if( arguments == null || arguments.hasOption("?")) {
+        if (arguments == null || arguments.hasOption("?")) {
             (new HelpFormatter()).printHelp("payment-tracker", argumentOptions);
             return;
         }
@@ -46,42 +46,34 @@ public class PaymentTrackerApp {
         if (arguments.hasOption("e")) {
             pt.enableEcho();
         }
+        
+        try {
 
-        /* exchage rates */
-        if (arguments.hasOption("x")) {
-            try {
-                pt.exchangesReader(fileInputStream(arguments.getOptionValue("x")));
-            } catch (IOException ioe) {
-                System.err.println("Can't read exchange rates file: " + ioe.getMessage());
-                return;
+            /* exchage rates */
+            if (arguments.hasOption("x") && !pt.exchangesReader(fileInputStream(arguments.getOptionValue("x")))) {
+                throw new IllegalStateException("Syntax error in: " + arguments.getOptionValue("x"));
             }
-        }
 
-        /* if input file is set, read */
-        if (arguments.hasOption("f")) {
-            try {
-                pt.reader(fileInputStream(arguments.getOptionValue("f")));
+            /* if input file is set, read */
+            if (arguments.hasOption("f")) {
+                if (!pt.reader(fileInputStream(arguments.getOptionValue("f")))) {
+                    throw new IllegalStateException("Syntax error in: " + arguments.getOptionValue("f"));
+                }
                 pt.printCurrentAmounts("payment stats after read: " + arguments.getOptionValue("f"));
-
-            } catch (IOException ioe) {
-                System.err.println("Can't read file: " + ioe.getMessage());
-                return;
             }
-        }
 
-        if( !arguments.hasOption("q")) {
+            if (!arguments.hasOption("q")) {
+                /* start periodial printer thread */
+                pt.printer(PRINTER_MESSAGE, PRINT_PERIOD);
 
-            /* start periodial printer thread */
-            pt.printer(PRINTER_MESSAGE,PRINT_PERIOD);
-
-            /* read input stream */
-            try {
+                /* read input stream */
                 pt.reader(System.in);
-            } catch( IOException ioe) {
-                System.err.println("Error in input stream: " + ioe.getMessage());
-            } finally {
-                pt.exit();
             }
+
+        } catch (Exception e ) {
+            System.err.println(e.getMessage());
+        } finally {
+            pt.exit();
         }
     }
 
@@ -108,7 +100,7 @@ public class PaymentTrackerApp {
      * @return
      * @throws IOException
      */
-    static InputStream fileInputStream(String fileName) throws IOException {
+    static InputStream fileInputStream(String fileName) throws FileNotFoundException {
         return new FileInputStream(new File(fileName));
     }
 
@@ -119,7 +111,7 @@ public class PaymentTrackerApp {
      * @return
      * @throws IOException
      */
-    static FileInputStream resourceInputStream(String resourceName) throws IOException {
+    static FileInputStream resourceInputStream(String resourceName) throws FileNotFoundException {
         return new FileInputStream(PaymentTrackerApp.class.getResource(resourceName).getFile());
     }
 }

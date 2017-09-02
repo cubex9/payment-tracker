@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
  */
 public class PaymentRecord extends CurrencyCode {
 
-    private static final Pattern PATTERN = Pattern.compile("^ *((?<CUR>"+CurrencyCode.PATTERN+") *|(?<AMO>-?\\d+) *){2}$");
+    private static final Pattern P_PATTERN = Pattern.compile("^ *((?<C>"+CurrencyCode.C_PATTERN +") *|(?<A>-?\\d+) *){2}$");
 
     private Long amount;
 
@@ -41,12 +41,12 @@ public class PaymentRecord extends CurrencyCode {
      * @return
      */
     public static PaymentRecord parse(String line) {
-        Matcher m = PATTERN.matcher(line);
+        Matcher m = P_PATTERN.matcher(line);
 
         if (m.matches()) {
-            if (m.group("CUR") != null && m.group("AMO") != null) {
+            if (m.group("C") != null && m.group("A") != null) {
                 try {
-                    return new PaymentRecord(m.group("CUR"), Long.parseLong(m.group("AMO")));
+                    return new PaymentRecord(m.group("C"), Long.parseLong(m.group("A")));
                 } catch( NumberFormatException nfe ) {
                     /* return null */
                 }

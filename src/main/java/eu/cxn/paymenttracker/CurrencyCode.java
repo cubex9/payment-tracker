@@ -2,7 +2,7 @@ package eu.cxn.paymenttracker;
 
 public class CurrencyCode {
 
-    public static final String PATTERN = "[A-Z]{3}";
+    public static final String C_PATTERN = "[A-Z]{3}";
 
     String code;
 

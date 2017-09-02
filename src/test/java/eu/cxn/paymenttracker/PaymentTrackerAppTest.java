@@ -86,14 +86,14 @@ public class PaymentTrackerAppTest {
     @Test
     public void mainFileEx() {
         PaymentTrackerApp.main(new String[]{"-f", "test"});
-        assertEquals("Can't read file: test (The system cannot find the file specified)\n", baos.toString().replaceAll("\r", ""));
+        assertEquals("test (The system cannot find the file specified)\n", baos.toString().replaceAll("\r", ""));
     }
 
     @Test
     public void mainExchangesEx() {
 
         PaymentTrackerApp.main(new String[]{"-x", "test"});
-        assertEquals("Can't read exchange rates file: test (The system cannot find the file specified)\n", baos.toString().replaceAll("\r", ""));
+        assertEquals("test (The system cannot find the file specified)\n", baos.toString().replaceAll("\r", ""));
 
 
     }
