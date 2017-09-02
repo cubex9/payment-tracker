@@ -39,6 +39,7 @@ public class ExchangeRecord extends CurrencyCode {
             try {
                 return new ExchangeRecord(m.group(1), Double.parseDouble(m.group(2)));
             } catch( IllegalArgumentException ise ) {
+                return null;
             }
         }
 

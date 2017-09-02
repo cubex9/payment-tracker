@@ -61,7 +61,10 @@ public class PaymentTrackerTest {
         assertEquals(PaymentTrackerApp.PRINTER_MESSAGE + "\n" +
                 "USD 900\n" +
                 "HKD 300\n" +
-                "RMB 2000\n", baos.toString().replaceAll("\r",""));
+                "RMB 2000\n",
+                baos.toString()
+                        .replaceFirst("\\(.*\\)","(%s)")
+                        .replaceAll("\r",""));
 
 
         tracker.exit();

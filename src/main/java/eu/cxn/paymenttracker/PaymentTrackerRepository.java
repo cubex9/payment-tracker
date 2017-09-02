@@ -24,9 +24,9 @@ class PaymentTrackerRepository {
      */
     PaymentTrackerRepository() {
 
+        exchanges = new Hashtable<>();
         /* data keep positions */
         data = new LinkedHashMap<>();
-        exchanges = new Hashtable<>();
     }
 
     /**

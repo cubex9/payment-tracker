@@ -16,7 +16,7 @@ public class PaymentTrackerApp {
     public static final String EXCHANGE_BASE_CODE = "USD";
 
     /* current status of repository message */
-    public static final String PRINTER_MESSAGE = "current status: ";
+    public static final String PRINTER_MESSAGE = "current status (%s): ";
 
     /* command line arguments definition */
     private static final Options argumentOptions = new Options()
@@ -46,7 +46,7 @@ public class PaymentTrackerApp {
         if (arguments.hasOption("e")) {
             pt.enableEcho();
         }
-        
+
         try {
 
             /* exchage rates */
@@ -56,18 +56,19 @@ public class PaymentTrackerApp {
 
             /* if input file is set, read */
             if (arguments.hasOption("f")) {
-                if (!pt.reader(fileInputStream(arguments.getOptionValue("f")))) {
+                if (!pt.reader(fileInputStream(arguments.getOptionValue("f")),false)) {
                     throw new IllegalStateException("Syntax error in: " + arguments.getOptionValue("f"));
                 }
                 pt.printCurrentAmounts("payment stats after read: " + arguments.getOptionValue("f"));
             }
 
             if (!arguments.hasOption("q")) {
+
                 /* start periodial printer thread */
                 pt.printer(PRINTER_MESSAGE, PRINT_PERIOD);
 
                 /* read input stream */
-                pt.reader(System.in);
+                pt.reader(System.in,true);
             }
 
         } catch (Exception e ) {

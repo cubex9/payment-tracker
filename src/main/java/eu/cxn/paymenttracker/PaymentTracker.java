@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.Date;
 import java.util.Scanner;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 /**
  *
@@ -40,7 +40,7 @@ public class PaymentTracker {
         this.output = output;
         this.exchangeBase = exchangeBase;
 
-        paymentRepository = new PaymentTrackerRepository();
+        this.paymentRepository = new PaymentTrackerRepository();
     }
 
     /**
@@ -57,7 +57,17 @@ public class PaymentTracker {
      * @throws IOException
      */
     public boolean reader(InputStream in) throws IOException {
-        return reader(in,this::resolveInputLine);
+        return reader(in, this::resolveInputLine, true);
+    }
+
+    /**
+     * read input data from stream
+     *
+     * @param in
+     * @throws IOException
+     */
+    public boolean reader(InputStream in, boolean skypSyntaxError) throws IOException {
+        return reader(in, this::resolveInputLine, skypSyntaxError);
     }
 
     /**
@@ -68,14 +78,15 @@ public class PaymentTracker {
             throw new IllegalStateException("Base exchange currnecy code is not set");
         }
 
-        return reader(in,this::resolveExchangeLine);
+        return reader(in, this::resolveExchangeLine, false);
     }
 
     /**
      * @param in
+     * @return false if error
      */
-    private boolean reader(InputStream in, Function<String,Boolean> resolver) throws IOException {
-        if( in == null) {
+    private boolean reader(InputStream in, BiFunction<String, Boolean, Boolean> resolver, boolean skipSyntaxError) throws IOException {
+        if (in == null) {
             throw new IllegalArgumentException("input stream is NULL");
         }
 
@@ -87,7 +98,7 @@ public class PaymentTracker {
             String line = s.nextLine();
 
             /* ignore empty lines and call line resolver  */
-            if (!(line.isEmpty() || ( result = resolver.apply(line)))) {
+            if (!(line.isEmpty() || (result = resolver.apply(line, skipSyntaxError)))) {
                 break;
             }
         }
@@ -105,7 +116,7 @@ public class PaymentTracker {
      * @param line
      * @return
      */
-    private boolean resolveInputLine(String line) {
+    private boolean resolveInputLine(String line, boolean skypSyntaxError) {
 
         /* quit command */
         if (line.contains("quit")) {
@@ -126,6 +137,7 @@ public class PaymentTracker {
             paymentRepository.put(r);
         } else {
             System.err.println("Payment: Invalid input ( " + line + " )");
+            return skypSyntaxError;
         }
 
         return true;
@@ -137,7 +149,7 @@ public class PaymentTracker {
      * @param line
      * @return
      */
-    private boolean resolveExchangeLine(String line) {
+    private boolean resolveExchangeLine(String line, boolean skypSyntaxError) {
 
         /* try parse line */
         ExchangeRecord r = ExchangeRecord.parse(line);
@@ -147,6 +159,7 @@ public class PaymentTracker {
             paymentRepository.put(r);
         } else {
             System.err.println("Exchange: Invalid input ( " + line + " )");
+            return skypSyntaxError;
         }
 
         return true;
@@ -166,17 +179,20 @@ public class PaymentTracker {
             @Override
             @SuppressWarnings("CallToThreadRun")
             public void run() {
-                try {
 
-                    while (true) {
-                        /* wait for print */
+                while (true) {
+
+                    try {
+                        /* wait for next period */
                         Thread.sleep(period);
 
-                        printCurrentAmounts(message);
+                    } catch (InterruptedException ie) {
+
+                        printerThread = null;
+                        break;
                     }
 
-                } catch (InterruptedException ie) {
-                    printerThread = null;
+                    printCurrentAmounts(message);
                 }
             }
         };
@@ -198,8 +214,8 @@ public class PaymentTracker {
      */
     public synchronized void printCurrentAmounts(String message) {
 
-        if( message != null ) {
-            output.println("\r"+message + "("+new Date()+")");
+        if (message != null) {
+            output.printf("\r" + message + "%n", new Date());
         }
 
         /* ( code, paymentRecord, exchangeRecord ) */
