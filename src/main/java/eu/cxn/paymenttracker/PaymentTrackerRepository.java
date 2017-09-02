@@ -5,12 +5,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * keep put and forEach action threadsafe
+ * keep payment and exchange data threadsafe
  */
 class PaymentTrackerRepository {
 
     @FunctionalInterface
-    public interface CompleteInfo {
+    interface CompleteInfo {
 
         void get( String code, PaymentRecord record, ExchangeRecord exchange );
     }

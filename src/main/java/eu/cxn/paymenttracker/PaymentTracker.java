@@ -4,6 +4,7 @@ package eu.cxn.paymenttracker;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.util.Date;
 import java.util.Scanner;
 import java.util.function.Function;
 
@@ -198,7 +199,7 @@ public class PaymentTracker {
     public synchronized void printCurrentAmounts(String message) {
 
         if( message != null ) {
-            output.println("\r"+message);
+            output.println("\r"+message + "("+new Date()+")");
         }
 
         /* ( code, paymentRecord, exchangeRecord ) */
