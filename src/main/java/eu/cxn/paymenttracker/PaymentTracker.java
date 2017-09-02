@@ -148,6 +148,7 @@ public class PaymentTracker {
 
                     while (true) {
                         printCurrentAmounts();
+                        output.flush();
 
                         /* wait for next period */
                         Thread.sleep(period);

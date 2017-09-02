@@ -40,8 +40,10 @@ public class PaymentRecordTest {
         assertEquals( "USD 21", PaymentRecord.parse("21 USD").toString());
         assertEquals( "USD -21", PaymentRecord.parse("USD -21").toString());
         assertEquals("USD -21", PaymentRecord.parse("-21 USD").toString());
+        assertEquals("USD 21", PaymentRecord.parse("USD21").toString());
+        assertEquals("USD -21", PaymentRecord.parse("USD-21").toString());
 
-        assertEquals("USD 21", PaymentRecord.parse("  USD    21   ").toString());
+        assertEquals("USD 21", PaymentRecord.parse("  USD     21   ").toString());
     }
 
     @Test
@@ -50,7 +52,6 @@ public class PaymentRecordTest {
         assertEquals(null, PaymentRecord.parse("usd 21"));
         assertEquals(null, PaymentRecord.parse("21"));
         assertEquals(null, PaymentRecord.parse("USD"));
-        assertEquals(null, PaymentRecord.parse("USD21"));
 
         assertEquals(null, PaymentRecord.parse("USD 45454354363563465365465465645654"));
     }

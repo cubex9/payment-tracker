@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
  */
 public class PaymentRecord extends CurrencyCode {
 
-    private static final Pattern PATTERN = Pattern.compile("^\\s*((?<CUR>[A-Z]{3})|(?<AMO>\\-?[0-9]+)|\\s+){3}\\s*$");
+    private static final Pattern PATTERN = Pattern.compile("^ *((?<CUR>[A-Z]{3}) *|(?<AMO>-?\\d+) *){2}$");
 
 
     private Long amount;
