@@ -37,6 +37,7 @@ public class ExchangeRecord extends CurrencyCode {
         Matcher m = P_PATTERN.matcher(line);
         if( m.matches()) {
             try {
+                CurrencyCode.isValid(m.group(1));
                 return new ExchangeRecord(m.group(1), Double.parseDouble(m.group(2)));
             } catch( IllegalArgumentException ise ) {
                 return null;

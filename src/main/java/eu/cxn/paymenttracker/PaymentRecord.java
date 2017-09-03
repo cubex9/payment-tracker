@@ -45,8 +45,9 @@ public class PaymentRecord extends CurrencyCode {
 
         if (m.matches() && m.group("C") != null && m.group("A") != null) {
             try {
+                CurrencyCode.isValid(m.group("C"));
                 return new PaymentRecord(m.group("C"), Long.parseLong(m.group("A")));
-            } catch (NumberFormatException nfe) {
+            } catch (IllegalArgumentException nfe) {
                 return null;
             }
         }

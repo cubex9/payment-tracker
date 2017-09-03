@@ -11,5 +11,4 @@ public class CurrencyCodeTest {
 
         assertEquals("USD", new CurrencyCode("USD").getCode());
     }
-
 }
