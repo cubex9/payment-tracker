@@ -1,32 +1,20 @@
 package eu.cxn.paymenttracker;
 
-import java.util.Hashtable;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.function.Consumer;
 
 /**
  * keep payment and exchange data threadsafe
  */
 class PaymentTrackerRepository {
 
-    @FunctionalInterface
-    interface CompleteInfo {
-
-        void get( String code, PaymentRecord record, ExchangeRecord exchange );
-    }
-
-    private Map<String, PaymentRecord> data;
-
-    private Map<String, ExchangeRecord> exchanges;
+    private Map<String, PaymentRecord> data = new TreeMap<>();
 
     /**
      *
      */
     PaymentTrackerRepository() {
-
-        exchanges = new Hashtable<>();
-        /* data keep positions */
-        data = new LinkedHashMap<>();
     }
 
     /**
@@ -43,8 +31,17 @@ class PaymentTrackerRepository {
         }
     }
 
-    synchronized void put(ExchangeRecord e) {
-        exchanges.put(e.getCode(),e);
+    /**
+     * set exchange rate to payment record, if not exist, create him with 0 amount
+     *
+     * @param e
+     */
+    synchronized void put(ExchangeRateRecord e) {
+
+        if( !data.containsKey(e.getCode())) {
+            data.put( e.getCode(), new PaymentRecord(e.getCode(),0L));
+        }
+        data.get(e.getCode()).setExchange(e);
     }
 
     /**
@@ -52,7 +49,7 @@ class PaymentTrackerRepository {
      *
      * @param c
      */
-    synchronized void forEach(CompleteInfo c) {
-        data.values().forEach( r -> c.get(r.getCode(), r, exchanges.get(r.getCode())));
+    synchronized void forEach(Consumer<PaymentRecord> c) {
+        data.values().forEach(c);
     }
 }

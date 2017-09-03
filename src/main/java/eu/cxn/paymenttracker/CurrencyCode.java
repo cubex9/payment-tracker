@@ -22,9 +22,6 @@ public class CurrencyCode {
         if( code == null ) {
             throw new IllegalArgumentException("code is null");
         }
-        /* can't use this, example for RMB library don't validate old codes,
-           only if java.util.currency.data property change
-         */
         Currency.getInstance(code);
     }
 }

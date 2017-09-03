@@ -22,7 +22,7 @@ public class PaymentTrackerTest extends AbstractPaymentTrackerTest {
     public void setUp() {
         baos = new ByteArrayOutputStream();
         output = new PrintStream(baos);
-        tracker = new PaymentTracker(output, PaymentTrackerApp.EXCHANGE_BASE_CODE);
+        tracker = new PaymentTracker(output);
     }
 
     @Test
@@ -40,31 +40,24 @@ public class PaymentTrackerTest extends AbstractPaymentTrackerTest {
                 "HKD 100\n" +
                 "USD -100\n" +
                 "RMB 2000\n" +
-                "HKD 200\n", baos.toString().replaceAll("\r",""));
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void exchangeReaderIlegal() throws Exception {
-
-        tracker = new PaymentTracker(output, null);
-        tracker.exchangesReader(PaymentTrackerApp.resourceInputStream("/examples/usd.exchanges"));
+                "HKD 200\n", baos.toString().replaceAll("\r", ""));
     }
 
     @Test
     public void printer() throws Exception {
 
         tracker.reader(PaymentTrackerApp.resourceInputStream("/examples/bsc.txt"));
-        tracker.printer( PaymentTrackerApp.PRINTER_MESSAGE, 1000L);
+        tracker.printer(PaymentTrackerApp.PRINTER_MESSAGE, 1000L);
 
         Thread.sleep(2000L);
 
         assertEquals(PaymentTrackerApp.PRINTER_MESSAGE + "\n" +
-                "USD 900\n" +
-                "HKD 300\n" +
-                "RMB 2000\n",
+                        "HKD 300\n" +
+                        "RMB 2000\n" +
+                        "USD 900\n",
                 baos.toString()
-                        .replaceFirst("\\(.*\\)","(%s)")
-                        .replaceAll("\r",""));
+                        .replaceFirst("\\(.*\\)", "(%s)")
+                        .replaceAll("\r", ""));
 
 
         tracker.exit();
@@ -81,7 +74,7 @@ public class PaymentTrackerTest extends AbstractPaymentTrackerTest {
     public void quit() throws Exception {
 
         tracker.reader(new ByteArrayInputStream("quit\nUSD 900\n".getBytes(StandardCharsets.UTF_8)));
-        assertEquals("final stats: \n", baos.toString().replaceAll("\r",""));
+        assertEquals("final stats: \n", baos.toString().replaceAll("\r", ""));
     }
 
     @Test
@@ -90,7 +83,7 @@ public class PaymentTrackerTest extends AbstractPaymentTrackerTest {
         System.setErr(new PrintStream(baos));
 
         tracker.reader(new ByteArrayInputStream("USD 90a\n".getBytes(StandardCharsets.UTF_8)));
-        assertEquals("Payment: Invalid input ( USD 90a )\n", baos.toString().replaceAll("\r",""));
+        assertEquals("Payment: Invalid input ( USD 90a )\n", baos.toString().replaceAll("\r", ""));
     }
 
     @Test
@@ -99,7 +92,7 @@ public class PaymentTrackerTest extends AbstractPaymentTrackerTest {
         System.setErr(new PrintStream(baos));
 
         tracker.exchangesReader(new ByteArrayInputStream("USD 90a\n".getBytes(StandardCharsets.UTF_8)));
-        assertEquals("Exchange: Invalid input ( USD 90a )\n", baos.toString().replaceAll("\r",""));
+        assertEquals("Exchange: Invalid input ( USD 90a )\n", baos.toString().replaceAll("\r", ""));
 
     }
 }

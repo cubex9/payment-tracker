@@ -11,10 +11,4 @@ public class CurrencyCodeTest extends AbstractPaymentTrackerTest {
 
         assertEquals("USD", new CurrencyCode("USD").getCode());
     }
-
-    @Test
-    public void currencyProperties() {
-
-        System.out.println( System.getProperty("java.util.currency.data"));
-    }
 }

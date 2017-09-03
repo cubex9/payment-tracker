@@ -12,9 +12,6 @@ public class PaymentTrackerApp {
     /* print period in miliseconds */
     private static final long PRINT_PERIOD = 60000L;
 
-    /* exchanges base */
-    public static final String EXCHANGE_BASE_CODE = "USD";
-
     /* current status of repository message */
     public static final String PRINTER_MESSAGE = "current status (%s): ";
 
@@ -45,7 +42,7 @@ public class PaymentTrackerApp {
             return;
         }
 
-        PaymentTracker pt = new PaymentTracker(System.out, EXCHANGE_BASE_CODE);
+        PaymentTracker pt = new PaymentTracker(System.out);
 
         /* enable echo */
         if (arguments.hasOption("e")) {

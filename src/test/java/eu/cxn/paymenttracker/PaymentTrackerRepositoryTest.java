@@ -53,7 +53,7 @@ public class PaymentTrackerRepositoryTest extends AbstractPaymentTrackerTest {
             }
         }
 
-        rep.forEach((c,r,e) -> assertEquals(0L, r.getAmount()));
+        rep.forEach(r -> assertEquals(0L, r.getAmount()));
     }
 
 }

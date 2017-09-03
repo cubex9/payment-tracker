@@ -16,9 +16,6 @@ public class PaymentTracker {
     /* synchronized data repository */
     private PaymentTrackerRepository paymentRepository;
 
-    /* exchange base */
-    private String exchangeBase;
-
     /* output print stream */
     private PrintStream output;
 
@@ -33,13 +30,11 @@ public class PaymentTracker {
     /**
      * @param output
      */
-    public PaymentTracker(PrintStream output, String exchangeBase) {
+    public PaymentTracker(PrintStream output) {
         if (output == null) {
             throw new IllegalArgumentException("output stream is: NULL");
         }
         this.output = output;
-        this.exchangeBase = exchangeBase;
-
         this.paymentRepository = new PaymentTrackerRepository();
     }
 
@@ -74,10 +69,6 @@ public class PaymentTracker {
      * exchanges reader
      */
     public boolean exchangesReader(InputStream in) throws IOException {
-        if (exchangeBase == null) {
-            throw new IllegalStateException("Base exchange currnecy code is not set");
-        }
-
         return reader(in, this::resolveExchangeLine, false);
     }
 
@@ -152,8 +143,8 @@ public class PaymentTracker {
     private boolean resolveExchangeLine(String line, boolean skypSyntaxError) {
 
         /* try parse line */
-        ExchangeRecord r = ExchangeRecord.parse(line);
-        if (r != null && !r.getCode().equals(exchangeBase)) {
+        ExchangeRateRecord r = ExchangeRateRecord.parse(line);
+        if (r != null && !r.getCode().equals(ExchangeRateRecord.BASE_CURRENCY)) {
 
             /* if ok, apply to repository */
             paymentRepository.put(r);
@@ -219,16 +210,10 @@ public class PaymentTracker {
         }
 
         /* ( code, paymentRecord, exchangeRecord ) */
-        paymentRepository.forEach((c, r, e) -> {
+        paymentRepository.forEach(r -> {
 
             if (r.getAmount() != 0) {
-                String o = c + " " + r.print();
-
-                if (e != null) {
-                    o += " (" + exchangeBase + " " + e.print(r.getAmount()) + ")";
-                }
-
-                output.println(o);
+                output.println( r.print());
             }
         });
 

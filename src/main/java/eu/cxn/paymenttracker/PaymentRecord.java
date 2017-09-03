@@ -12,6 +12,8 @@ public class PaymentRecord extends CurrencyCode {
 
     private Long amount;
 
+    private ExchangeRateRecord exchange;
+
     /**
      * @param code
      * @param amount
@@ -42,6 +44,18 @@ public class PaymentRecord extends CurrencyCode {
     }
 
     /**
+     * if not set, return null
+     *
+     */
+    public ExchangeRateRecord getExchange() {
+        return exchange;
+    }
+
+    public void setExchange( ExchangeRateRecord exchange ) {
+        this.exchange = exchange;
+    }
+
+    /**
      * @param line
      * @return
      */
@@ -63,7 +77,13 @@ public class PaymentRecord extends CurrencyCode {
      *
      */
     public String print() {
-        return String.format("%d", amount);
+        String o = String.format("%s %d", getCode(), getAmount());
+
+        if( getExchange() != null ) {
+            o += " " + getExchange().print(getAmount());
+        }
+
+        return o;
     }
 
     /**
@@ -71,6 +91,6 @@ public class PaymentRecord extends CurrencyCode {
      */
     @Override
     public String toString() {
-        return getCode() + " " + getAmount();
+        return getCode() + " " + getAmount() ;
     }
 }

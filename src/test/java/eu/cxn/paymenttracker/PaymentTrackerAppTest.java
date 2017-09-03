@@ -39,9 +39,9 @@ public class PaymentTrackerAppTest extends AbstractPaymentTrackerTest {
                         "HKD 200\n" +
                         "payment stats after read: src/test/resources/examples/bsc.txt" +
                         "\n" +
-                        "USD 900\n" +
                         "HKD 300 (USD 38.35)\n" +
-                        "RMB 2000 (USD 304.83)\n",
+                        "RMB 2000 (USD 304.83)\n" +
+                        "USD 900\n",
                 baos.toString().replaceAll("\r", ""));
 
     }

@@ -3,13 +3,17 @@ package eu.cxn.paymenttracker;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ExchangeRecord extends CurrencyCode {
+public class ExchangeRateRecord extends CurrencyCode {
+
+    /* exchanges base, in future is easy change static into instance property */
+    public static final String BASE_CURRENCY = "USD";
 
     private static final Pattern P_PATTERN = Pattern.compile("^("+ CurrencyCode.C_PATTERN +") (\\d+(\\.\\d+)?)$");
 
+    /** inverted exchange rate to BASE_CURRENCY */
     private Double invRate;
 
-    public ExchangeRecord(String code, Double invRate) {
+    public ExchangeRateRecord(String code, Double invRate) {
         super(code);
         this.invRate = invRate;
 
@@ -29,7 +33,7 @@ public class ExchangeRecord extends CurrencyCode {
      * @param amount
      */
     public String print(long amount) {
-        return String.format("%.2f", amount * invRate);
+        return String.format("(%s %.2f)", BASE_CURRENCY, amount * invRate);
     }
 
     /**
@@ -38,11 +42,11 @@ public class ExchangeRecord extends CurrencyCode {
      * @param line
      * @return
      */
-    public static ExchangeRecord parse( String line ) {
+    public static ExchangeRateRecord parse(String line ) {
         Matcher m = P_PATTERN.matcher(line);
         if( m.matches()) {
             try {
-                return new ExchangeRecord(m.group(1), Double.parseDouble(m.group(2)));
+                return new ExchangeRateRecord(m.group(1), Double.parseDouble(m.group(2)));
             } catch( IllegalArgumentException ise ) {
                 return null;
             }
