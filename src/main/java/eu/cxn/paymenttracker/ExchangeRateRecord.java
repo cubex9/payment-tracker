@@ -8,9 +8,11 @@ public class ExchangeRateRecord extends CurrencyCode {
     /* exchanges base, in future is easy change static into instance property */
     public static final String BASE_CURRENCY = "USD";
 
-    private static final Pattern P_PATTERN = Pattern.compile("^("+ CurrencyCode.C_PATTERN +") (\\d+(\\.\\d+)?)$");
+    private static final Pattern P_PATTERN = Pattern.compile("^(" + CurrencyCode.C_PATTERN + ") (\\d+(\\.\\d+)?)$");
 
-    /** inverted exchange rate to BASE_CURRENCY */
+    /**
+     * inverted exchange rate to BASE_CURRENCY
+     */
     private Double invRate;
 
     public ExchangeRateRecord(String code, Double invRate) {
@@ -22,7 +24,7 @@ public class ExchangeRateRecord extends CurrencyCode {
 
     public void isInvRateValid() {
 
-        if( invRate == null || invRate < 0.000001 ) {
+        if (invRate == null || invRate < 0.000001) {
             throw new IllegalArgumentException("Inversion exchange < 0.000001");
         }
     }
@@ -42,17 +44,13 @@ public class ExchangeRateRecord extends CurrencyCode {
      * @param line
      * @return
      */
-    public static ExchangeRateRecord parse(String line ) {
+    public static ExchangeRateRecord parse(String line) {
         Matcher m = P_PATTERN.matcher(line);
-        if( m.matches()) {
-            try {
-                return new ExchangeRateRecord(m.group(1), Double.parseDouble(m.group(2)));
-            } catch( IllegalArgumentException ise ) {
-                return null;
-            }
+        if (m.matches()) {
+            return new ExchangeRateRecord(m.group(1), Double.parseDouble(m.group(2)));
         }
 
-        return null;
+        throw new IllegalArgumentException("Incorrect format exchange entry: " + line);
     }
 
     @Override

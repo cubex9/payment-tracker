@@ -60,7 +60,7 @@ public class PaymentTrackerTest extends AbstractPaymentTrackerTest {
                         .replaceAll("\r", ""));
 
 
-        tracker.exit();
+        tracker.stop();
     }
 
     @Test(expected = IllegalStateException.class)
@@ -79,16 +79,14 @@ public class PaymentTrackerTest extends AbstractPaymentTrackerTest {
 
     @Test
     public void readerInvalidInput() throws Exception {
-
         System.setErr(new PrintStream(baos));
 
         tracker.reader(new ByteArrayInputStream("USD 90a\n".getBytes(StandardCharsets.UTF_8)));
-        assertEquals("Payment: Invalid input ( USD 90a )\n", baos.toString().replaceAll("\r", ""));
+        assertEquals("Incorrect format payment entry: USD 90a\n", baos.toString().replaceAll("\r", ""));
     }
 
     @Test
     public void exchangeInvalidInput() throws Exception {
-
         System.setErr(new PrintStream(baos));
 
         tracker.exchangesReader(new ByteArrayInputStream("USD 90a\n".getBytes(StandardCharsets.UTF_8)));

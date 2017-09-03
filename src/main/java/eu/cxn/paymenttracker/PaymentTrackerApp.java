@@ -76,7 +76,7 @@ public class PaymentTrackerApp {
         } catch (Exception e ) {
             System.err.println(e.getMessage());
         } finally {
-            pt.exit();
+            pt.stop();
         }
     }
 

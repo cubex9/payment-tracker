@@ -1,12 +1,9 @@
 package eu.cxn.paymenttracker;
 
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.Date;
-import java.util.Scanner;
-import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 /**
  *
@@ -52,7 +49,7 @@ public class PaymentTracker {
      * @throws IOException
      */
     public boolean reader(InputStream in) throws IOException {
-        return reader(in, this::resolveInputLine, true);
+        return reader(in, l -> paymentRepository.put(PaymentRecord.parse(l)), true, echo, true);
     }
 
     /**
@@ -62,100 +59,60 @@ public class PaymentTracker {
      * @throws IOException
      */
     public boolean reader(InputStream in, boolean skypSyntaxError) throws IOException {
-        return reader(in, this::resolveInputLine, skypSyntaxError);
+        return reader(in, l -> paymentRepository.put(PaymentRecord.parse(l)), skypSyntaxError, echo, skypSyntaxError);
     }
 
     /**
      * exchanges reader
      */
     public boolean exchangesReader(InputStream in) throws IOException {
-        return reader(in, this::resolveExchangeLine, false);
+        return reader(in, l -> paymentRepository.put(ExchangeRateRecord.parse(l)), false, false, false);
     }
 
     /**
      * @param in
      * @return false if error
      */
-    private boolean reader(InputStream in, BiFunction<String, Boolean, Boolean> resolver, boolean skipSyntaxError) throws IOException {
+    private boolean reader(InputStream in, Consumer<String> resolver, boolean quit, boolean echo, boolean skipSyntaxError) throws IOException {
         if (in == null) {
             throw new IllegalArgumentException("input stream is NULL");
         }
 
-        /* read to EOF or 'quit' */
-        Scanner s = new Scanner(in);
-        boolean result = true;
+        try ( BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
 
-        while (s.hasNextLine()) {
-            String line = s.nextLine();
+            String line = null;
+            while((line = br.readLine())!=null) {
 
-            /* ignore empty lines and call line resolver  */
-            if (!(line.isEmpty() || (result = resolver.apply(line, skipSyntaxError)))) {
-                break;
+                if (line.isEmpty()) {
+                    continue;
+                }
+
+                if (line.equals("quit")) {
+                    printCurrentAmounts("final stats: ");
+                    return quit;
+                }
+
+                if (echo) {
+                    printEcho(line);
+                }
+
+                try {
+                    resolver.accept(line);
+
+                } catch (IllegalArgumentException iae) {
+
+                    /* print error or exception */
+                    if (skipSyntaxError) {
+                        System.err.println(iae.getMessage());
+                    } else {
+                        throw iae;
+                    }
+                }
             }
         }
 
-        if (s.ioException() != null) {
-            throw s.ioException();
-        }
-
-        return result;
-    }
-
-    /**
-     * manage one input line of data source
-     *
-     * @param line
-     * @return
-     */
-    private boolean resolveInputLine(String line, boolean skypSyntaxError) {
-
-        /* quit command */
-        if (line.contains("quit")) {
-            printCurrentAmounts("final stats: ");
-            return false;
-        }
-
-        /* print echo */
-        if (echo) {
-            printEcho(line);
-        }
-
-        /* try parse line */
-        PaymentRecord r = PaymentRecord.parse(line);
-        if (r != null) {
-
-            /* if ok, apply to repository */
-            paymentRepository.put(r);
-        } else {
-            System.err.println("Payment: Invalid input ( " + line + " )");
-            return skypSyntaxError;
-        }
-
         return true;
     }
-
-    /**
-     * manage one line of exchange source stream
-     *
-     * @param line
-     * @return
-     */
-    private boolean resolveExchangeLine(String line, boolean skypSyntaxError) {
-
-        /* try parse line */
-        ExchangeRateRecord r = ExchangeRateRecord.parse(line);
-        if (r != null && !r.getCode().equals(ExchangeRateRecord.BASE_CURRENCY)) {
-
-            /* if ok, apply to repository */
-            paymentRepository.put(r);
-        } else {
-            System.err.println("Exchange: Invalid input ( " + line + " )");
-            return skypSyntaxError;
-        }
-
-        return true;
-    }
-
 
     /**
      * @param period
@@ -174,7 +131,7 @@ public class PaymentTracker {
                 while (true) {
 
                     try {
-                        /* wait for next period */
+                        /* wait on next period */
                         Thread.sleep(period);
 
                     } catch (InterruptedException ie) {
@@ -213,16 +170,16 @@ public class PaymentTracker {
         paymentRepository.forEach(r -> {
 
             if (r.getAmount() != 0) {
-                output.println( r.print());
+                output.println(r.print());
             }
         });
 
     }
 
     /**
-     * interrupt printer thread, call on end
+     * interrupt and remove printer thread, call on end
      */
-    public void exit() {
+    public void stop() {
         if (printerThread != null && printerThread.isAlive()) {
             printerThread.interrupt();
         }

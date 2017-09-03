@@ -38,6 +38,12 @@ class PaymentTrackerRepository {
      */
     synchronized void put(ExchangeRateRecord e) {
 
+        /** in this time, when we have 1:1 payment records vs exchange record, is cheaper
+         * put exchange into payment record, if in future need more payment records,
+         * example by user/company atp.., better keep exchange in separate table and
+         * pair with payment record in output actions
+         *
+         */
         if( !data.containsKey(e.getCode())) {
             data.put( e.getCode(), new PaymentRecord(e.getCode(),0L));
         }

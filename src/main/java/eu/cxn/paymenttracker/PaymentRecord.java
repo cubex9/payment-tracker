@@ -27,6 +27,7 @@ public class PaymentRecord extends CurrencyCode {
     }
 
     public void isAmountValid() {
+        /* in this time, all long values is valid */
     }
 
     /**
@@ -45,13 +46,12 @@ public class PaymentRecord extends CurrencyCode {
 
     /**
      * if not set, return null
-     *
      */
     public ExchangeRateRecord getExchange() {
         return exchange;
     }
 
-    public void setExchange( ExchangeRateRecord exchange ) {
+    public void setExchange(ExchangeRateRecord exchange) {
         this.exchange = exchange;
     }
 
@@ -63,14 +63,10 @@ public class PaymentRecord extends CurrencyCode {
         Matcher m = P_PATTERN.matcher(line);
 
         if (m.matches() && m.group("C") != null && m.group("A") != null) {
-            try {
-                return new PaymentRecord(m.group("C"), Long.parseLong(m.group("A")));
-            } catch (IllegalArgumentException nfe) {
-                return null;
-            }
+            return new PaymentRecord(m.group("C"), Long.parseLong(m.group("A")));
         }
 
-        return null;
+        throw new IllegalArgumentException("Incorrect format payment entry: " + line);
     }
 
     /**
@@ -79,7 +75,7 @@ public class PaymentRecord extends CurrencyCode {
     public String print() {
         String o = String.format("%s %d", getCode(), getAmount());
 
-        if( getExchange() != null ) {
+        if (getExchange() != null) {
             o += " " + getExchange().print(getAmount());
         }
 
@@ -91,6 +87,6 @@ public class PaymentRecord extends CurrencyCode {
      */
     @Override
     public String toString() {
-        return getCode() + " " + getAmount() ;
+        return getCode() + " " + getAmount();
     }
 }

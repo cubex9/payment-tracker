@@ -20,8 +20,13 @@ public class CurrencyCode {
 
     public void isCodeValid()  {
         if( code == null ) {
-            throw new IllegalArgumentException("code is null");
+            throw new IllegalArgumentException("currency code is null");
         }
-        Currency.getInstance(code);
+
+        try {
+            Currency.getInstance(code);
+        } catch (IllegalArgumentException iar) {
+            throw new IllegalArgumentException("Unknown currency code: " + code);
+        }
     }
 }
