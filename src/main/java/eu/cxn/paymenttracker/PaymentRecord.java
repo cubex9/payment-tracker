@@ -20,6 +20,11 @@ public class PaymentRecord extends CurrencyCode {
 
         super(code);
         this.amount = amount;
+
+        isAmountValid();
+    }
+
+    public void isAmountValid() {
     }
 
     /**
@@ -45,7 +50,6 @@ public class PaymentRecord extends CurrencyCode {
 
         if (m.matches() && m.group("C") != null && m.group("A") != null) {
             try {
-                CurrencyCode.isValid(m.group("C"));
                 return new PaymentRecord(m.group("C"), Long.parseLong(m.group("A")));
             } catch (IllegalArgumentException nfe) {
                 return null;

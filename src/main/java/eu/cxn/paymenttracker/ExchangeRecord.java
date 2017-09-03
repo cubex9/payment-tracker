@@ -7,15 +7,20 @@ public class ExchangeRecord extends CurrencyCode {
 
     private static final Pattern P_PATTERN = Pattern.compile("^("+ CurrencyCode.C_PATTERN +") (\\d+(\\.\\d+)?)$");
 
-    Double invRate;
+    private Double invRate;
 
     public ExchangeRecord(String code, Double invRate) {
         super(code);
+        this.invRate = invRate;
 
-        if( invRate < 0.000001 ) {
+        isInvRateValid();
+    }
+
+    public void isInvRateValid() {
+
+        if( invRate == null || invRate < 0.000001 ) {
             throw new IllegalArgumentException("Inversion exchange < 0.000001");
         }
-        this.invRate = invRate;
     }
 
     /**
@@ -37,7 +42,6 @@ public class ExchangeRecord extends CurrencyCode {
         Matcher m = P_PATTERN.matcher(line);
         if( m.matches()) {
             try {
-                CurrencyCode.isValid(m.group(1));
                 return new ExchangeRecord(m.group(1), Double.parseDouble(m.group(2)));
             } catch( IllegalArgumentException ise ) {
                 return null;

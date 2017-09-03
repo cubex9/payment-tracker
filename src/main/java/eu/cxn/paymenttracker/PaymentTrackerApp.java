@@ -26,6 +26,11 @@ public class PaymentTrackerApp {
             .addOption("e", false, "print input data to output")
             .addOption("x", true, "exchange rates file");
 
+    /* append your special currency codes */
+    static {
+        System.setProperty("java.util.currency.data","currency.properties");
+    }
+
     /**
      * console application
      *

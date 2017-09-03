@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 
 import static org.junit.Assert.assertEquals;
 
-public class PaymentTrackerAppTest {
+public class PaymentTrackerAppTest extends AbstractPaymentTrackerTest {
 
     private ByteArrayOutputStream baos;
 

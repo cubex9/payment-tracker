@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class PaymentRecordTest {
+public class PaymentRecordTest extends AbstractPaymentTrackerTest {
 
     private PaymentRecord pr;
 
