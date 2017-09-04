@@ -1,13 +1,9 @@
-Payment tracker
+payment-tracker
 ---------------
 
 RUN:
 
 java -jar payment-tracker.jar
-
-RUN WITH EXAMPLE EXCHANGES:
-
-java -jar payment-tracker.jar -x examples/usd.exchanges
 
 COMMAND LINE ARGUMENTS:
 
@@ -22,10 +18,24 @@ BUILD:
 mvn clean package
 mv target/payment-tracker-0.1-SNAPSHOT-jar-with-dependencies.jar ./payment-tracker.jar
 
+RUN WITH EXAMPLE EXCHANGES:
+
+java -jar payment-tracker.jar -x examples/usd.exchanges
+
+one record on line, record format:
+CZK 0.123456
+AUD 0.123456
+...
+
 UNKNOWN CURRENCY CODE:
 
 append into: currency.properties
 
-property format and information: http://docs.oracle.com/javase/8/docs/api/java/util/Currency.html
+one record on line, rcord format:
+RM=RMB,999,2
+...
+
+property format and information:
+http://docs.oracle.com/javase/8/docs/api/java/util/Currency.html
 
 

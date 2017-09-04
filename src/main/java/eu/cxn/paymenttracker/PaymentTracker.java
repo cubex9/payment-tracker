@@ -6,7 +6,16 @@ import java.util.Date;
 import java.util.function.Consumer;
 
 /**
+ * Head class of payment-tracker
  *
+ * base use with console in/out:
+ * <code>
+ *
+ *     PaymentTracker pt = new PaymentTracker( System.out );
+ *     pt.reader(System.in);
+ *     pt.stop();
+ *
+ * </code>
  */
 public class PaymentTracker {
 
@@ -117,7 +126,7 @@ public class PaymentTracker {
     /**
      * @param period
      */
-    public void printer(String message, long period) {
+    public synchronized void printer(String message, long period) {
         if (printerThread != null) {
             throw new IllegalStateException("Impossible start second printer");
         }
@@ -136,7 +145,7 @@ public class PaymentTracker {
 
                     } catch (InterruptedException ie) {
 
-                        printerThread = null;
+                        setPrinterThread(null);
                         break;
                     }
 
@@ -179,11 +188,15 @@ public class PaymentTracker {
     /**
      * interrupt and remove printer thread, call on end
      */
-    public void stop() {
+    public synchronized void stop() {
         if (printerThread != null && printerThread.isAlive()) {
             printerThread.interrupt();
         }
 
-        printerThread = null;
+        setPrinterThread(null);
+    }
+
+    private synchronized void setPrinterThread(Thread t) {
+        printerThread = t;
     }
 }
