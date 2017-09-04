@@ -91,6 +91,14 @@ public class PaymentTrackerTest extends AbstractPaymentTrackerTest {
     }
 
     @Test
+    public void readerInvalidInputSyntaxError() throws Exception {
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("Incorrect format payment entry: USD 90a");
+
+        tracker.reader(new ByteArrayInputStream("USD 90a\n".getBytes(StandardCharsets.UTF_8)),false);
+    }
+
+    @Test
     public void exchangeInvalidInput() throws Exception {
 
 

@@ -27,16 +27,16 @@
 
 
         <!-- verze pluginu -->
-        <maven.compiler.version>2.3.2</maven.compiler.version>
+        <!--<maven.compiler.version>2.3.2</maven.compiler.version>-->
         <!--<maven.war.version>2.3</maven.war.version>-->
-        <maven.surefire.version>2.18</maven.surefire.version>
-        <maven.failsafe.version>2.18</maven.failsafe.version>
-        <jacoco.maven.version>0.7.4.201502262128</jacoco.maven.version>
+        <!--<maven.surefire.version>2.18</maven.surefire.version>-->
+        <!--<maven.failsafe.version>2.18</maven.failsafe.version>-->
+        <!--<jacoco.maven.version>0.7.4.201502262128</jacoco.maven.version>-->
         <!-- https://ecosystem.atlassian.net/browse/MJF-207 -->
 
         <!-- datum sestavení aplikace + formát pro datum+čas -->
-        <app.build.timestamp>${maven.build.timestamp}</app.build.timestamp>
-        <maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSSXXX</maven.build.timestamp.format>
+        <!--<app.build.timestamp>${maven.build.timestamp}</app.build.timestamp>-->
+        <!--<maven.build.timestamp.format>yyyy-MM-dd'T'HH:mm:ss.SSSXXX</maven.build.timestamp.format>-->
 
     </properties>
 
@@ -58,43 +58,13 @@
     </dependencies>
 
     <build>
-        <!--<resources>-->
-        <!--&lt;!&ndash;<resource>&ndash;&gt;-->
-        <!--&lt;!&ndash;<directory>src/main/resources</directory>&ndash;&gt;-->
-        <!--&lt;!&ndash;<includes>&ndash;&gt;-->
-        <!--&lt;!&ndash;<include>application.properties</include>&ndash;&gt;-->
-        <!--&lt;!&ndash;</includes>&ndash;&gt;-->
-        <!--&lt;!&ndash;<filtering>true</filtering>&ndash;&gt;-->
-        <!--&lt;!&ndash;</resource>&ndash;&gt;-->
-        <!--&lt;!&ndash;<resource>&ndash;&gt;-->
-        <!--&lt;!&ndash;<directory>src/main/resources</directory>&ndash;&gt;-->
-        <!--&lt;!&ndash;</resource>&ndash;&gt;-->
-        <!--<resource>-->
-        <!--<directory>src/main/java/META-INF</directory>-->
-        <!--</resource>-->
-        <!--</resources>-->
 
         <plugins>
 
-            <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-compiler-plugin</artifactId>-->
-            <!--</plugin>-->
-
-            <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-jar-plugin</artifactId>-->
-
-                <!--<configuration>-->
-                    <!--<archive>-->
-                        <!--<manifest>-->
-                            <!--<addClasspath>true</addClasspath>-->
-                            <!--<mainClass>eu.cxn.paymenttracker.PaymentTrackerApp</mainClass>-->
-                        <!--</manifest>-->
-                    <!--</archive>-->
-                <!--</configuration>-->
-
-            <!--</plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
 
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -108,10 +78,6 @@
                             <mainClass>eu.cxn.paymenttracker.PaymentTrackerApp</mainClass>
                         </manifest>
                     </archive>
-
-                        <!--<outputFileNameMapping>-->
-                            <!--${module.artifactId}.${module.extension}-->
-                        <!--</outputFileNameMapping>-->
 
                 </configuration>
 
@@ -127,11 +93,11 @@
             </plugin>
 
 
-            <!--&lt;!&ndash; unit tests &ndash;&gt;-->
-            <!--<plugin>-->
-            <!--<groupId>org.apache.maven.plugins</groupId>-->
-            <!--<artifactId>maven-surefire-plugin</artifactId>-->
-            <!--</plugin>-->
+            <!-- unit tests -->
+            <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
 
         </plugins>
     </build>

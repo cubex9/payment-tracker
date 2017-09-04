@@ -28,8 +28,8 @@ public class PaymentTrackerAppTest extends AbstractPaymentTrackerTest {
         PaymentTrackerApp.main(new String[]{
                 "-q",
                 "-e",
-                "-f", "src/test/resources/examples/bsc.txt",
-                "-x", "src/test/resources/examples/usd.exchanges"}
+                "-f", "examples/bsc.txt",
+                "-x", "examples/usd.exchanges"}
         );
 
         assertEquals("USD 1000\n" +
@@ -37,7 +37,7 @@ public class PaymentTrackerAppTest extends AbstractPaymentTrackerTest {
                         "USD -100\n" +
                         "RMB 2000\n" +
                         "HKD 200\n" +
-                        "payment stats after read: src/test/resources/examples/bsc.txt" +
+                        "payment stats after read: examples/bsc.txt" +
                         "\n" +
                         "HKD 300 (USD 38.35)\n" +
                         "RMB 2000 (USD 304.83)\n" +

@@ -51,7 +51,7 @@ public class PaymentTrackerApp {
 
         try {
 
-            /* exchage rates */
+            /* exchange rates */
             if (arguments.hasOption("x") && !pt.exchangesReader(fileInputStream(arguments.getOptionValue("x")))) {
                 throw new IllegalStateException("Syntax error in: " + arguments.getOptionValue("x"));
             }

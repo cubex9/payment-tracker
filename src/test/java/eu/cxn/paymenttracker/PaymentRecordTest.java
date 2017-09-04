@@ -26,7 +26,7 @@ public class PaymentRecordTest extends AbstractPaymentTrackerTest {
     }
 
     @Test
-    public void add() throws Exception {
+    public void inc() throws Exception {
 
         pr.inc(new PaymentRecord("USD", 20L));
 
@@ -35,6 +35,16 @@ public class PaymentRecordTest extends AbstractPaymentTrackerTest {
         pr.inc(new PaymentRecord("USD", -20L));
 
         assertEquals(100L, pr.getAmount());
+
+    }
+
+    @Test
+    public void exchangePrint() throws Exception {
+
+        PaymentRecord paymentRecord = new PaymentRecord("CZK", 10L);
+        paymentRecord.setExchange( new ExchangeRateRecord("CZK", 1.1));
+
+        assertEquals("CZK 10 (USD 11.00)", paymentRecord.print());
 
     }
 
