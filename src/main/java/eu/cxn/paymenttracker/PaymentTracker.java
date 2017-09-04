@@ -11,9 +11,24 @@ import java.util.function.Consumer;
  * base use with console in/out:
  * <code>
  *
+ *     // create with output print stream
  *     PaymentTracker pt = new PaymentTracker( System.out );
- *     pt.reader(System.in);
- *     pt.stop();
+ *
+ *     // start printer thread with message and period
+ *     pt.printer("current status:",60000L);
+ *
+ *     try {
+ *          // read from input stream
+ *          pt.reader(System.in);
+ *
+ *     } catch ( IOException e) {
+ *          // print or log exception
+ *
+ *     } finally {
+ *
+ *          // destroy printer thread
+ *          pt.stop();
+ *     }
  *
  * </code>
  */
