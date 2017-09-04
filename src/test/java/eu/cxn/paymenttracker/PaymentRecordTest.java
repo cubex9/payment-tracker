@@ -1,13 +1,18 @@
 package eu.cxn.paymenttracker;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.assertEquals;
 
 public class PaymentRecordTest extends AbstractPaymentTrackerTest {
 
     private PaymentRecord pr;
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void setUp() {
@@ -23,13 +28,13 @@ public class PaymentRecordTest extends AbstractPaymentTrackerTest {
     @Test
     public void add() throws Exception {
 
-        pr.inc( new PaymentRecord("USD", 20L ));
+        pr.inc(new PaymentRecord("USD", 20L));
 
-        assertEquals( 120L, pr.getAmount());
+        assertEquals(120L, pr.getAmount());
 
-        pr.inc( new PaymentRecord("USD", -20L ));
+        pr.inc(new PaymentRecord("USD", -20L));
 
-        assertEquals( 100L, pr.getAmount());
+        assertEquals(100L, pr.getAmount());
 
     }
 
@@ -37,8 +42,10 @@ public class PaymentRecordTest extends AbstractPaymentTrackerTest {
     public void parse() throws Exception {
 
         assertEquals("USD 21", PaymentRecord.parse("USD 21").toString());
-        assertEquals( "USD 21", PaymentRecord.parse("21 USD").toString());
-        assertEquals( "USD -21", PaymentRecord.parse("USD -21").toString());
+
+
+        assertEquals("USD 21", PaymentRecord.parse("21 USD").toString());
+        assertEquals("USD -21", PaymentRecord.parse("USD -21").toString());
         assertEquals("USD -21", PaymentRecord.parse("-21 USD").toString());
         assertEquals("USD 21", PaymentRecord.parse("USD21").toString());
         assertEquals("USD -21", PaymentRecord.parse("USD-21").toString());
@@ -47,12 +54,43 @@ public class PaymentRecordTest extends AbstractPaymentTrackerTest {
     }
 
     @Test
-    public void noParse() {
-        assertEquals(null, PaymentRecord.parse("USD --21"));
-        assertEquals(null, PaymentRecord.parse("usd 21"));
-        assertEquals(null, PaymentRecord.parse("21"));
-        assertEquals(null, PaymentRecord.parse("USD"));
+    public void noParse1() {
 
-        assertEquals(null, PaymentRecord.parse("USD 45454354363563465365465465645654"));
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("Incorrect format payment entry: USD --21");
+        PaymentRecord.parse("USD --21");
+    }
+
+    @Test
+    public void noParse2() {
+
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("Incorrect format payment entry: usd 21");
+        PaymentRecord.parse("usd 21");
+    }
+
+
+    @Test
+    public void noParse3() {
+
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("Incorrect format payment entry: 21");
+        PaymentRecord.parse("21");
+    }
+
+    @Test
+    public void noParse4() {
+
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("Incorrect format payment entry: USD");
+        PaymentRecord.parse("USD");
+    }
+
+    @Test
+    public void noParse5() {
+
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("For input string: \"45454354363563465365465465645654\"");
+        PaymentRecord.parse("USD 45454354363563465365465465645654");
     }
 }

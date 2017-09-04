@@ -1,7 +1,9 @@
 package eu.cxn.paymenttracker;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -17,6 +19,9 @@ public class PaymentTrackerTest extends AbstractPaymentTrackerTest {
     private PrintStream output;
 
     private PaymentTracker tracker;
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void setUp() {
@@ -87,10 +92,11 @@ public class PaymentTrackerTest extends AbstractPaymentTrackerTest {
 
     @Test
     public void exchangeInvalidInput() throws Exception {
-        System.setErr(new PrintStream(baos));
+
+
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("Incorrect format exchange entry: USD 90a");
 
         tracker.exchangesReader(new ByteArrayInputStream("USD 90a\n".getBytes(StandardCharsets.UTF_8)));
-        assertEquals("Exchange: Invalid input ( USD 90a )\n", baos.toString().replaceAll("\r", ""));
-
     }
 }
