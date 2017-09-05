@@ -52,6 +52,10 @@ public class PaymentRecord extends CurrencyCode {
     }
 
     public void setExchange(ExchangeRateRecord exchange) {
+        if( getCode().equals(ExchangeRateRecord.BASE_CURRENCY)) {
+            throw new IllegalArgumentException("Impossible set exchange rate into :" + ExchangeRateRecord.BASE_CURRENCY);
+        }
+
         this.exchange = exchange;
     }
 
