@@ -1,5 +1,6 @@
 payment-tracker
 ---------------
+need java 1.8 or higher
 
 RUN:
 
@@ -16,22 +17,25 @@ COMMAND LINE ARGUMENTS:
 BUILD:
 
 mvn clean package
-mv target/payment-tracker-0.1-SNAPSHOT-jar-with-dependencies.jar ./payment-tracker.jar
+cp target/payment-tracker-0.1-SNAPSHOT-jar-with-dependencies.jar ./payment-tracker.jar
 
 RUN WITH EXAMPLE EXCHANGES:
 
 java -jar payment-tracker.jar -x examples/usd.exchanges
 
+file, with currency and inversion exchange rate to USD,
 one record on line, record format:
+
 CZK 0.123456
 AUD 0.123456
 ...
 
 UNKNOWN CURRENCY CODE:
 
-append into: currency.properties
+append into file: currency.properties
 
-one record on line, rcord format:
+one record on line, record format:
+
 RM=RMB,999,2
 ...
 
