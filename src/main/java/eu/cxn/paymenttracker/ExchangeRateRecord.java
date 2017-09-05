@@ -8,7 +8,7 @@ public class ExchangeRateRecord extends CurrencyCode {
     /* exchanges base, in future is easy change static into instance property */
     public static final String BASE_CURRENCY = "USD";
 
-    private static final Pattern P_PATTERN = Pattern.compile("^(" + CurrencyCode.C_PATTERN + ") (\\d+(\\.\\d+)?)$");
+    private static final Pattern P_PATTERN = Pattern.compile("^(" + CurrencyCode.C_PATTERN + ") (\\d+(\\.\\d{6})?)$");
 
     /**
      * inverted exchange rate to BASE_CURRENCY
